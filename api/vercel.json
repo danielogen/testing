@@ -24,3 +24,5 @@
         "dest": "backend/wsgi.py"
       }
     ]
+
+}
