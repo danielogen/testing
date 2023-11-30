@@ -18,7 +18,6 @@ DJANGO_SUPERUSER_PASSWORD=${EMAIL_HOST_PASSWORD}
 python3.9 manage.py createsuperuser \
     --email $DJANGO_SUPERUSER_EMAIL \
     --username $DJANGO_SUPERUSER_USERNAME \
-    --password $DJANGO_SUPERUSER_PASSWORD \
     --noinput || true
 
 echo "Collecting static files..."
