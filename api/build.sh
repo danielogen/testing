@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Installing dependencies..."
-python3.9 -m pip install pip --upgrade
+python3.9 -m pip install --upgrade pip
 python3.9 -m pip install -r requirements.txt
 
 echo "Migrating database..."
