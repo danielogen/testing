@@ -1,74 +1,75 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from "react"
+import { useDarkMode } from "../pages/Root"
 
 const RatingBar = ({
   question,
   rating,
+  onChange,
+  ratingKey,
   className,
-  customWidth,
-  customHeight,
+  customWidth = "w-16",
+  customHeight = "h-3",
 }) => {
-  const [segmentColor1, setSegmentColor1] = useState('bg-gray-300');
-  const [segmentColor2, setSegmentColor2] = useState('bg-gray-300');
-  const [segmentColor3, setSegmentColor3] = useState('bg-gray-300');
-  const [segmentColor4, setSegmentColor4] = useState('bg-gray-300');
-  const [segmentColor5, setSegmentColor5] = useState('bg-gray-300');
+  const { darkMode } = useDarkMode()
 
-  if (rating < 1 || rating > 5) {
-    console.log('Error: Rating does not fit range of 1-5');
+  const [segmentColors, setSegmentColors] = useState([
+    darkMode == "true" ? "bg-zinc-600" : "bg-zinc-300",
+    darkMode == "true" ? "bg-zinc-600" : "bg-zinc-300",
+    darkMode == "true" ? "bg-zinc-600" : "bg-zinc-300",
+    darkMode == "true" ? "bg-zinc-600" : "bg-zinc-300",
+    darkMode == "true" ? "bg-zinc-600" : "bg-zinc-300",
+  ])
+
+  // Function to handle click on a rating segment
+  const handleSegmentClick = (newRating) => {
+    if (onChange) {
+      onChange(ratingKey, newRating)
+    }
   }
 
   useEffect(() => {
-    switch (rating) {
-      case 1:
-        setSegmentColor1('bg-red-500');
-        break;
-      case 2:
-        setSegmentColor2('bg-red-400');
-        break;
-      case 3:
-        setSegmentColor3('bg-yellow-400');
-        break;
-      case 4:
-        setSegmentColor4('bg-blue-400');
-        break;
-      case 5:
-        setSegmentColor5('bg-blue-500');
-        break;
-    }
-  }, [rating]);
+    // Update all segment colors based on the current rating
+    const updatedColors = segmentColors.map((_, index) => {
+      if (index + 1 === rating) {
+        // Set the color only for the selected segment
+        switch (rating) {
+          case 1:
+            return "bg-red-500"
+          case 2:
+            return "bg-red-400"
+          case 3:
+            return "bg-yellow-400"
+          case 4:
+            return "bg-blue-400"
+          case 5:
+            return "bg-blue-500"
+          default:
+            return darkMode == "true" ? "bg-zinc-600" : "bg-zinc-300"
+        }
+      }
+      return darkMode == "true" ? "bg-zinc-600" : "bg-zinc-300"
+    })
+    setSegmentColors(updatedColors)
+  }, [rating])
 
   return (
-    <div className={className}>
+    <div className={className ? className : "flex flex-col gap-1"}>
       <p className="mb-[2px]">{question}</p>
       <div className="flex gap-1">
-        <div
-          className={`${customWidth ? customWidth : 'w-16'} ${
-            customHeight ? customHeight : 'h-3'
-          } text-white font-bold text-lg flex items-center justify-center rounded-l-md ${segmentColor1}`}
-        ></div>
-        <div
-          className={`${customWidth ? customWidth : 'w-16'} ${
-            customHeight ? customHeight : 'h-3'
-          } text-white font-bold text-lg flex items-center justify-center ${segmentColor2}`}
-        ></div>
-        <div
-          className={`${customWidth ? customWidth : 'w-16'} ${
-            customHeight ? customHeight : 'h-3'
-          } text-white font-bold text-lg flex items-center justify-center ${segmentColor3}`}
-        ></div>
-        <div
-          className={`${customWidth ? customWidth : 'w-16'} ${
-            customHeight ? customHeight : 'h-3'
-          } text-white font-bold text-lg flex items-center justify-center ${segmentColor4}`}
-        ></div>
-        <div
-          className={`${customWidth ? customWidth : 'w-16'} ${
-            customHeight ? customHeight : 'h-3'
-          } text-white font-bold text-lg flex items-center justify-center rounded-r-md ${segmentColor5}`}
-        ></div>
+        {segmentColors.map((color, index) => (
+          <div
+            key={index}
+            className={`${customWidth} ${customHeight} text-white font-bold text-lg flex items-center justify-center ${color} ${
+              index === 0 ? "rounded-l-md" : ""
+            } ${index === 4 ? "rounded-r-md" : ""}`}
+            onClick={() => handleSegmentClick(index + 1)}
+          ></div>
+        ))}
       </div>
     </div>
-  );
-};
-export default RatingBar;
+  )
+}
+
+export default RatingBar

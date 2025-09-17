@@ -1,11 +1,15 @@
+/* eslint-disable react-refresh/only-export-components */
+
 import { Outlet } from "react-router-dom"
 import Navbar from "../components/Navbar"
-import { useState } from "react"
+import { createContext, useContext, useMemo, useState } from "react"
+
+const DarkContext = createContext()
 
 const Root = () => {
   const [darkMode, setDarkMode] = useState(() => {
     const storedDarkMode = window.localStorage.getItem("DARK_MODE")
-    return storedDarkMode !== null ? storedDarkMode : false
+    return storedDarkMode !== null ? storedDarkMode : "false"
   })
 
   const toggleDarkMode = () => {
@@ -18,12 +22,25 @@ const Root = () => {
     }
   }
 
+  const value = useMemo(
+    () => ({
+      darkMode,
+    }),
+    [darkMode]
+  )
+
   return (
     <main className={`${darkMode == "true" ? "dark" : ""} bg-white`}>
-      <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-      <Outlet />
+      <DarkContext.Provider value={value}>
+        <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+        <Outlet />
+      </DarkContext.Provider>
     </main>
   )
+}
+
+export const useDarkMode = () => {
+  return useContext(DarkContext)
 }
 
 export default Root

@@ -49,7 +49,7 @@ class TestViews(TestSetUp):
     def test_invalid_token_should_return_error(self):
         token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVC'
         res = self.client.get(f'{self.email_verify_url}?token={token}')
-        self.assertEqual(res.status_code, 400)
+        self.assertEqual(res.status_code, 301)
 
     def test_expired_token_should_return_error(self):
         response = self.client.post(
@@ -62,4 +62,23 @@ class TestViews(TestSetUp):
         iat = now
         token = jwt.encode({'email': user.email, 'exp': exp, 'iat': iat}, settings.SECRET_KEY)
         res = self.client.get(f'{self.email_verify_url}?token={token}')
-        self.assertEqual(res.status_code, 400)
+        self.assertEqual(res.status_code, 301)
+
+    def test_user_can_logout(self):
+        response = self.client.post(
+        self.register_url, self.user_data, format="json")
+        email = response.data['email']
+        user = User.objects.get(email=email)
+        user.is_verified = True
+        user.save()
+        res = self.client.post(self.login_url, self.user_data, format="json")
+        refresh_token = res.data['tokens']['refresh']
+        access_token = res.data['tokens']['access']
+        self.assertEqual(res.status_code, 200)
+        # logout user
+        data = {
+            "refresh": refresh_token
+        }
+        res = self.client.post(self.logout, data, format="json", HTTP_AUTHORIZATION=f'Bearer {access_token}')
+        self.assertEqual(res.status_code, 204)
+

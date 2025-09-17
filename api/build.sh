@@ -11,14 +11,12 @@ python3.9 manage.py migrate --noinput
 
 echo "Creating superuser..."
 
-DJANGO_SUPERUSER_EMAIL=${DJANGO_SUPERUSER_EMAIL}
-DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME}
-DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD}
+export DJANGO_SUPERUSER_EMAIL=${SUPERUSER_EMAIL}
+export DJANGO_SUPERUSER_USERNAME=${SUPERUSER_USERNAME}
+export DJANGO_SUPERUSER_PASSWORD=${EMAIL_HOST_PASSWORD}
 
-python3.9 manage.py createsuperuser \
-    --email $DJANGO_SUPERUSER_EMAIL \
-    --username $DJANGO_SUPERUSER_USERNAME \
-    --noinput || true
+python3.9 manage.py createsuperuser --noinput
+python3.9 manage.py runscript load_courses
 
 echo "Collecting static files..."
 
